@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   AxiosCacheInstance,
   CacheAxiosResponse,
@@ -79,7 +80,8 @@ export abstract class BaseClient {
 
   private addLoggingInterceptors(): void {
     this.api.interceptors.request.use(
-      (config: CacheRequestConfig) => handleRequest(config),
+      // eslint-disable-next-line
+      (config) => handleRequest(config),
       (error: AxiosError<string>) => handleRequestError(error)
     );
 

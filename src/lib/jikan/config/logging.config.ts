@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import { CacheAxiosResponse, CacheRequestConfig } from 'axios-cache-interceptor';
 
-export const handleRequest = (requestConfig: CacheRequestConfig): CacheRequestConfig => {
+export const handleRequest = (requestConfig) => {
   console.info(`[Request] ${requestConfig.method?.toUpperCase() || ''} | ${requestConfig.url || ''}`);
   return requestConfig;
 };

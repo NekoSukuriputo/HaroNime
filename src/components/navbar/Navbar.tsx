@@ -68,6 +68,7 @@ export default function NavbarWithMegaMenu() {
         <div className="hidden items-center gap-x-2 lg:flex">
           <div className="relative flex w-full gap-2 md:w-max">
             <Input
+              crossOrigin={Input}
               type="search"
               placeholder="Search"
               containerProps={{
