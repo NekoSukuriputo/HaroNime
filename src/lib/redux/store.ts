@@ -1,8 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import seasonNowSlicer from "./features/anime/getSeasonsNow";
+
+const rootReducers = combineReducers({
+  seasonNow: seasonNowSlicer,
+});
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {},
+    reducer: rootReducers,
   });
 };
 

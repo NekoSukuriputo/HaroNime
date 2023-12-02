@@ -1,5 +1,3 @@
-import Axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from "axios";
-
 import {
   AxiosCacheInstance,
   CacheAxiosResponse,
@@ -7,44 +5,20 @@ import {
   CacheRequestConfig,
   setupCache,
 } from "axios-cache-interceptor";
+import axios, { AxiosError } from "axios";
+import { BaseURL } from "../constants";
+import {
+  handleRequest,
+  handleRequestError,
+  handleResponse,
+  handleResponseError,
+} from "../config";
 
-export const handleRequest = (
-  requestConfig: CacheRequestConfig
-): CacheRequestConfig => {
-  console.info(
-    `[Request] ${requestConfig.method?.toUpperCase() || ""} | ${
-      requestConfig.url || ""
-    }`
-  );
-  return requestConfig;
-};
-
-export const handleRequestError = (error: AxiosError): Promise<AxiosError> => {
-  console.error(
-    `[Request Error] CODE ${error.code || "UNKNOWN"} | ${error.message}`
-  );
-  throw error;
-};
-
-export const handleResponse = (
-  response: CacheAxiosResponse
-): CacheAxiosResponse => {
-  console.info(
-    `[Request Response] ${response.config.method?.toUpperCase() || ""} | ${
-      response.config.url || ""
-    }`,
-    response.data
-  );
-  return response;
-};
-
-export const handleResponseError = (error: AxiosError): Promise<AxiosError> => {
-  console.error(
-    `[ Response Error ] CODE ${error.code || "UNKNOWN"} | ${error.message}`
-  );
-  throw error;
-};
-
+/**
+ * **Client Args**
+ *
+ * Used to pass optional configuration for logging and cache to the clients.
+ */
 export interface ClientArgs {
   /**
    * **EnableLogging**
@@ -64,24 +38,43 @@ export interface ClientArgs {
   baseURL: string;
 }
 
-export default class ApiService {
-  api: AxiosCacheInstance;
-  baseURL: string;
+/**
+ * **Base Client**
+ *
+ * This client is responsible for creating an Axios Instance and the cache and logging configurations
+ */
+export abstract class BaseClient {
+  public api: AxiosCacheInstance;
+
   constructor(clientOptions: Partial<ClientArgs> = {}) {
-    this.baseURL = process.env.BASE_API_URL;
     this.api = setupCache(
-      Axios.create({
-        baseURL: this.baseURL,
+      axios.create({
+        baseURL: clientOptions.baseURL ?? BaseURL.REST,
         headers: {
+          "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
+          "crossDomain": "true",
         },
       }),
       clientOptions.cacheOptions
     );
-
     if (clientOptions.enableLogging) {
       this.addLoggingInterceptors();
     }
+  }
+
+  protected replacePathParams(
+    path: string,
+    params: { [key in string]: unknown }
+  ): string {
+    for (const param of Object.keys(params)) {
+      if (!path.match(`{${param}}`))
+        throw new Error(`Path does not contain "${param}" parameter.`);
+
+      path = path.replace(`{${param}}`, String(params[param]));
+    }
+
+    return path;
   }
 
   private addLoggingInterceptors(): void {
