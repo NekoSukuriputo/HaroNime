@@ -53,7 +53,7 @@ export abstract class BaseClient {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
-          "crossDomain": "true",
+          "crossDomain": "true"
         },
       }),
       clientOptions.cacheOptions
