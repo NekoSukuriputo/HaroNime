@@ -1,7 +1,9 @@
+"use client";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "@/lib/redux/store";
 import { JikanResponse, Anime, SeasonsClient } from "@/lib/jikan";
 
+import axios from "axios";
 export interface SeasonNow {
   data: JikanResponse<Anime[]>;
   isLoading: boolean;
@@ -15,9 +17,9 @@ const initialState: SeasonNow = {
 };
 
 export const fetchSeasonNow = createAsyncThunk("seasonNow/fetch", async () => {
-  const client = new SeasonsClient();
-  const res: JikanResponse<Anime[]> = await client.getSeasonNow();
-  return res;
+  const res = await axios.get("/api/anime/getSessonNow");
+  console.log("res", res);
+  return res.data;
 });
 
 export const seasonNowSlicer = createSlice({
@@ -43,4 +45,4 @@ export const seasonNowSlicer = createSlice({
   },
 });
 
-export default seasonNowSlicer.reducer
+export default seasonNowSlicer.reducer;
